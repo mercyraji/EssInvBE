@@ -26,11 +26,11 @@
             font-size: 20px;
         }
 
-        @media only screen and (max-width: 390px) {
+        @media only screen and (max-width: 550px) {
             .accordion {
                 text-align: left;
                 outline: none;
-                font-size: 30px;
+                font-size: 40px;
                 transition: 0.2s;
 
             }
@@ -38,6 +38,12 @@
             .texte {
                 font-size: 30px;
             }
+
+            .center {
+
+                width: 150%;
+            }
+
         }
 
         .active,
@@ -61,7 +67,7 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
-            width: 75%;
+            width: 100%;
         }
 
         .panel {
@@ -72,11 +78,12 @@
             transition: max-height 0.2s ease-out;
         }
     </style>
-    <img src="https://lh3.googleusercontent.com/p/AF1QipP_bIiu1db9WXIXSEymKYupqb2NaruXJOm5DQaU=s1360-w1360-h1020"
-        class="center">
+
 </head>
 
 <body>
+    <img src="https://lh3.googleusercontent.com/p/AF1QipP_bIiu1db9WXIXSEymKYupqb2NaruXJOm5DQaU=s1360-w1360-h1020"
+        class="center">
     <p> </p>
     <button class="accordion">What is this application?</button>
     <div class="panel">
@@ -123,16 +130,15 @@
     <div class="panel">
 
         <p class="texte">SUNDAY - CLOSED</p>
-        <p class="texte">MONDAY - 12 AM – 5 PM</p>
-        <p class="texte">TUESDAY - 11 AM – 5 PM</p>
-        <p class="texte">WEDNESDAY - 1 PM – 7 PM</p>
+        <p class="texte">MONDAY - 12 AM - 5 PM</p>
+        <p class="texte">TUESDAY - 11 AM - 5 PM</p>
+        <p class="texte">WEDNESDAY - 1 PM - 7 PM</p>
         <p class="texte">THURSDAY - CLOSED</p>
-        <p class="texte">FRIDAY - 11 AM – 7 PM</p>
+        <p class="texte">FRIDAY - 11 AM - 7 PM</p>
         <p class="texte">SATURDAY - CLOSED</p>
 
         </p>
     </div>
-
 
 
     <script>
@@ -151,6 +157,7 @@
             });
         }
     </script>
+
 </body>
 
 </html>
