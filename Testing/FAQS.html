@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_accordion-->
+    <h1 style="text-align: center"> FAQS</h1>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .accordion {
+            background-color: goldenrod;
+            color: black;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            font-weight: bold;
+            text-align: left;
+            outline: none;
+            font-size: 20px;
+            transition: 0.2s;
+        }
+
+        .active,
+        .accordion:hover {
+            background-color: rgba(218, 165, 32, 0.55);
+        }
+
+        .accordion:after {
+            content: '\002B';
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .active:after {
+            content: "\2212";
+        }
+
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="accordion">What is this Application?</button>
+    <div class="panel">
+        <p style="font-size:20px">This application is used to order food from the Retriver Essentials. The user can
+            order
+            various items from said inventory. The user has a limit of one order per day
+            and a limit on how much the user can order for each item.
+        </p>
+    </div>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
