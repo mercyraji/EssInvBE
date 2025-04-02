@@ -5,5 +5,4 @@ Notes:
 
 Dependencies so far
 - Node.js, including express, cors
-
-To run, do npm start
+- npm install bcrypt
