@@ -3,6 +3,7 @@ import { hashPass } from "./createUserPass.js";
 import { execute } from "./sql.js";
 import { fetchFirst } from "./fetch.js";
 
+// inserts all the items from the pdf to the inventory table in the db
 export const insertInv = async () => {
     const db = new sqlite3.Database("ess-inv.db");
     const sql = 'INSERT INTO Inventory(product_name, weight, price, quantity, total_weight) VALUES(?, ?, ?, ?, ?)';
@@ -45,12 +46,13 @@ export const insertInv = async () => {
     }
 };
 
+// inserts dummy student & admin accounts into the users table
 export const insertUser = async () => {
     const db = new sqlite3.Database("ess-inv.db");
     const sql = 'INSERT INTO Users(first_name, last_name, email, hashed_pass, user_type) VALUES(?, ?, ?, ?, ?)';
     try {
         // insert student account
-        const studentPass = hashPass(10, 'student1234');
+        const studentPass = hashPass(10, 'student1234'); // create password for student
         if (studentPass != -1){ // hash was successful
             await execute(db, sql, ['Steve', 'Student', 'student@umbc.edu', studentPass, 0]); // 0 indicates student
         }    
@@ -60,7 +62,7 @@ export const insertUser = async () => {
 
     try {
         // insert admin account
-        const adminPass = hashPass(10, 'admin1234');
+        const adminPass = hashPass(10, 'admin1234'); // create pass for admin
         if (adminPass != -1){ // hash was successful
             await execute(db, sql, ['Amanda', 'Admin', 'admin@umbc.edu', adminPass, 1]); // 1 indicates admin
         }    
@@ -72,12 +74,13 @@ export const insertUser = async () => {
 
 };
 
+// inserts an order into the orders table based on the user's email and the other order details
 export const insertOrder = async (email, total_weight, total_quantity, product_names) => {
     const db = new sqlite3.Database("ess-inv.db");
     const sql = 'INSERT INTO Orders(user_id, total_weight, total_quantity, product_names) VALUES(?, ?, ?, ?)';
     const fetchsql = 'SELECT user_id FROM Users WHERE LOWER(email) = LOWER(?)';
     try {
-        // get user id based on email from user table
+        // get user id from user table using email 
         console.log(`Fetching user_id for email: ${email}`);
         const row = await fetchFirst(db, fetchsql, [email]);
 

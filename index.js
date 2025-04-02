@@ -24,7 +24,7 @@ const app = express();
 app.use(cors()); // allows requests from frontend
 app.use(express.json()); // parses incoming json data
 
-
+// retrieves all the inventory items from the inventory table and sends it to the front end
 app.get("/getInventory", async (req, res) => {
     const sql = "SELECT * FROM Inventory";
     try {
@@ -35,6 +35,7 @@ app.get("/getInventory", async (req, res) => {
     }
 });
 
+// gets all the orders in the orders table and sends it to the front end
 app.get("/getOrders", async (req, res) => {
     const sql = "SELECT * FROM Orders";
     try {
@@ -45,6 +46,7 @@ app.get("/getOrders", async (req, res) => {
     }
 });
 
+// gets all the users in the users table and sends it to the front end
 app.get("/getUsers", async (req, res) => {
     const sql = "SELECT * FROM Users";
     try {

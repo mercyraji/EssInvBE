@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 //const studentPass = 'student1234';
 
 export async function hashPass(saltRounds, userPass){
-    const salt = await bcrypt.genSalt(saltRounds);
+    const salt = await bcrypt.genSalt(saltRounds); // creates salt for hashing
 
     bcrypt.hash(userPass, salt, (err, hash) => {
         if (err) {
@@ -23,7 +23,7 @@ export async function hashPass(saltRounds, userPass){
 
 // for checking if password from log in matches password in user table
 export function checkUserPass(userInput, storedPass){
-
+    // compares user input to stored password in user table
     bcrypt.compare(userInput, storedPass, (err, result) => {
         if (err) {
             console.log(err);
