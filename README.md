@@ -5,4 +5,4 @@ Notes:
 
 Dependencies so far
 - Node.js, including express, cors
-- npm install bcrypt
+- npm install bcrypt (already inside into node modules tho)
