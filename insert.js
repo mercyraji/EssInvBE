@@ -6,7 +6,7 @@ import { fetchFirst } from "./fetch.js";
 // inserts all the items from the pdf to the inventory table in the db
 export const insertInv = async () => {
     const db = new sqlite3.Database("ess-inv.db");
-    const sql = 'INSERT INTO Inventory(product_name, weight, price, quantity, total_weight) VALUES(?, ?, ?, ?, ?)';
+    const sql = 'INSERT OR IGNORE INTO Inventory(product_name, weight, price, quantity, total_weight) VALUES(?, ?, ?, ?, ?)';
     try {
         await execute(db, sql, ['Sona Masoori Rice', 20, 25, 13, 260]);
         await execute(db, sql, ['Toor Dahl (Red Lentils)', 7, 1.25, 1, 70]);

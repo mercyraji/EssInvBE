@@ -2,6 +2,7 @@ import sqlite3 from "sqlite3";
 import { createTables } from "./createTables.js";
 import { insertInv, insertOrder, insertUser } from "./insert.js";
 import { fetchAll, fetchFirst } from "./fetch.js";
+import { insertNewItem, updateInv } from "./updateTable.js";
 import express from "express";
 import cors from "cors";
 
@@ -57,6 +58,43 @@ app.get("/getUsers", async (req, res) => {
     }
 });
 
+// adds a new item to the inventory table based on the completed add item form in frontend
+app.post('/addInventoryItem', async (req, res) => {
+    const {productName, weight, price, quantity} = req.body; // gets front-end form details
+
+    // validate data sent from front-end
+    if (!productName || !weight || !price || !quantity) {
+        return res.status(400).json({ message: 'Missing fields in request body' });
+    }
+
+    try {
+        await insertNewItem(productName, weight, price, quantity); // inserts new item
+        res.status(201).json({message: "Inventory item added successfully"});
+    } catch (err) {
+        console.error("Error adding new item to inventory");
+        res.status(500).json({message: "Failed to add new item to inventory"});
+    }
+});
+
+// requires order details in the form of [{product_name: 'Name', product_quantity: #, product_total_weight: #}, ...] from frontend
+// using order details, will update the inventory table based on the details & insert user's order
+// updateInv() includes insertOrder()
+app.post('/finalizeOrder', async (req, res) => {
+    const {orderDetails, email} = req.body;
+    
+    if (!Array.isArray(orderDetails) || orderDetails.length === 0 || !email){
+        return res.status(400).json({message: 'Invalid order details or missing email'});
+    }
+
+    try {
+        await updateInv(orderDetails, email);
+        res.status(200).json({message: 'Inventory updated successfully after finalized order & user order inserted'});
+    } catch (err) {
+        console.error("Error finalizing order: ", err);
+        res.status(500).json({message: 'Failed to update inventory after student\'s finalized order'});
+    }
+
+});
 
 // start server
 const PORT = 5000;
