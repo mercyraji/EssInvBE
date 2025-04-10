@@ -136,3 +136,19 @@ export async function verifyPasswordByEmail(email, plainPassword) { // Use expor
         return false;
     }
 }
+
+/**
+ * Retrieves all users from the in-memory store, excluding sensitive data.
+ * @returns {Array<object>} An array of user objects (id, username, email, createdAt).
+ */
+export function getAllUsers() { // No need for async if just reading from memory
+    const allUsersData = [];
+    // Iterate over the values of the usersById object
+    for (const user of Object.values(usersById)) {
+        // Create a new object excluding the hashedPassword
+        const { hashedPassword, ...userData } = user;
+        allUsersData.push(userData);
+    }
+    console.log(`[user_db] Retrieved data for ${allUsersData.length} users.`);
+    return allUsersData;
+}
