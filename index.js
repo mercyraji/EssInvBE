@@ -7,6 +7,7 @@ import { insertInv, insertOrder, insertUser } from "./insert.js";
 import { fetchAll, fetchFirst } from "./fetch.js";
 import { insertNewItem, updateInv } from "./updateTable.js";
 import { createAuthRoutes } from './auth.js'; //createuserpass functionality
+import { getAllUsers } from './user_db.js'; // Importing the new function from user_db.js
 
 const db = new sqlite3.Database("ess-inv.db");
 
@@ -57,6 +58,7 @@ app.get("/getOrders", async (req, res) => {
     }
 });
 
+/*
 // gets all the users in the users table and sends it to the front end
 app.get("/getUsers", async (req, res) => {
     const sql = "SELECT * FROM Users";
@@ -65,6 +67,22 @@ app.get("/getUsers", async (req, res) => {
         res.json(items);
     } catch (err) {
         res.status(500).json({error: err.message});
+    }
+});
+*/
+
+// Gets all the users (Rewritten to use user_db.js)
+app.get("/getUsers", (req, res) => { // 'async' keyword likely not needed now
+    console.log("Executing /getUsers request (using in-memory store)...")
+    try {
+        // Call the function from user_db.js
+        const users = getAllUsers();
+        // Send the result (array of user objects without hashes)
+        res.json(users);
+    } catch (err) {
+        // Although unlikely for in-memory access unless getAllUsers throws an error
+        console.error("Error retrieving users from in-memory store:", err);
+        res.status(500).json({ error: "Failed to retrieve users" });
     }
 });
 
