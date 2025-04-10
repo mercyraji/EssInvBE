@@ -1,7 +1,7 @@
-// user_db.js (Rewritten to use corrected CreateUserpass.js)
+// user_db.js (In-Memory Version, Using ESM)
 
-// Import the corrected CommonJS-compatible functions
-const { hashPass, checkUserPass } = require('./CreateUserpass.js');
+// Assumes corrected CreateUserpass.js also uses ESM and works correctly
+import { hashPass, checkUserPass } from './CreateUserpass.js';
 
 // --- In-Memory Store ---
 const usersById = {};
@@ -9,20 +9,19 @@ const usersByUsername = {};
 const usersByEmail = {};
 let nextUserId = 1;
 
-// Salt rounds needed for hashPass function
+// Salt rounds needed for hashPass function (if CreateUserpass requires it)
 const saltRounds = 10;
 
 // --- Database Functions ---
 
 /**
- * Adds a new user using corrected hashPass.
+ * Adds a new user using hashPass.
  */
-async function addUser(username, email, plainPassword) {
+export async function addUser(username, email, plainPassword) { // Use export
     if (!username || !email || !plainPassword) {
         console.error("Error: Username, email, and password are required.");
-        return null; // Or throw a validation error
+        return null;
     }
-    // Case-insensitive checks
     if (usersByUsername[username.toLowerCase()]) {
         console.warn(`Warning: Username "${username}" already exists.`);
         return null;
@@ -36,7 +35,6 @@ async function addUser(username, email, plainPassword) {
         // Hash the password using the imported async hashPass function
         const hashedPassword = await hashPass(saltRounds, plainPassword);
 
-        // Create and store user if hashing was successful
         const newUser = {
             id: nextUserId,
             username: username,
@@ -50,23 +48,21 @@ async function addUser(username, email, plainPassword) {
         usersByEmail[email.toLowerCase()] = newUser;
         nextUserId++;
 
-        console.log(`User "${username}" (ID: ${newUser.id}) added successfully.`);
+        console.log(`[user_db] User "${username}" (ID: ${newUser.id}) added successfully.`);
 
         const { hashedPassword: _, ...userData } = newUser;
         return userData; // Return user data without hash
 
     } catch (error) {
-        // Catch errors thrown by hashPass or other issues
-        console.error(`Error adding user "${username}":`, error.message || error);
-        // Do not proceed with user creation if hashing failed
-        // Optionally re-throw or return a specific error indicator
+        console.error(`[user_db] Error adding user "${username}":`, error.message || error);
         throw new Error(`Failed to add user "${username}" due to a server error.`);
     }
 }
 
-// --- Find functions remain the same ---
-
-async function findUserById(id) {
+/**
+ * Finds a user by their ID.
+ */
+export async function findUserById(id) { // Use export
     const userId = parseInt(id, 10);
     if (isNaN(userId)) return null;
     const user = usersById[userId];
@@ -77,7 +73,10 @@ async function findUserById(id) {
     return null;
 }
 
-async function findUserByUsername(username) {
+/**
+ * Finds a user by their username (case-insensitive).
+ */
+export async function findUserByUsername(username) { // Use export
     if (!username) return null;
     const user = usersByUsername[username.toLowerCase()];
      if (user) {
@@ -87,7 +86,10 @@ async function findUserByUsername(username) {
     return null;
 }
 
-async function findUserByEmail(email) {
+/**
+ * Finds a user by their email (case-insensitive).
+ */
+export async function findUserByEmail(email) { // Use export
     if (!email) return null;
     const user = usersByEmail[email.toLowerCase()];
      if (user) {
@@ -97,60 +99,40 @@ async function findUserByEmail(email) {
     return null;
 }
 
-// --- Verify functions use corrected checkUserPass ---
-
 /**
- * Verifies password by username using corrected checkUserPass.
+ * Verifies password by username using checkUserPass.
  */
-async function verifyPasswordByUsername(username, plainPassword) {
+export async function verifyPasswordByUsername(username, plainPassword) { // Use export
     if (!username || !plainPassword) return false;
-
     const user = usersByUsername[username.toLowerCase()];
     if (!user) {
-        console.log(`Verification failed: Username "${username}" not found.`);
-        return false; // User not found
+        console.log(`[user_db] Verification failed: Username "${username}" not found.`);
+        return false;
     }
-
     try {
-        // Compare passwords using the imported async checkUserPass function
         const match = await checkUserPass(plainPassword, user.hashedPassword);
-        return match; // Returns true or false
+        return match;
     } catch (error) {
-        // Catch errors thrown by checkUserPass
-        console.error(`Error verifying password for username "${username}":`, error.message || error);
-        return false; // Return false on error
+        console.error(`[user_db] Error verifying password for username "${username}":`, error.message || error);
+        return false;
     }
 }
 
 /**
- * Verifies password by email using corrected checkUserPass.
+ * Verifies password by email using checkUserPass.
  */
-async function verifyPasswordByEmail(email, plainPassword) {
+export async function verifyPasswordByEmail(email, plainPassword) { // Use export
     if (!email || !plainPassword) return false;
-
     const user = usersByEmail[email.toLowerCase()];
     if (!user) {
-         console.log(`Verification failed: Email "${email}" not found.`);
-        return false; // User not found
+         console.log(`[user_db] Verification failed: Email "${email}" not found.`);
+        return false;
     }
-
     try {
-        // Compare passwords using the imported async checkUserPass function
         const match = await checkUserPass(plainPassword, user.hashedPassword);
-        return match; // Returns true or false
+        return match;
     } catch (error) {
-         // Catch errors thrown by checkUserPass
-        console.error(`Error verifying password for email "${email}":`, error.message || error);
-        return false; // Return false on error
+        console.error(`[user_db] Error verifying password for email "${email}":`, error.message || error);
+        return false;
     }
 }
-
-// --- Export the public functions ---
-module.exports = {
-    addUser,
-    findUserById,
-    findUserByUsername,
-    findUserByEmail,
-    verifyPasswordByUsername,
-    verifyPasswordByEmail,
-};
