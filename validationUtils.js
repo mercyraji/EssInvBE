@@ -1,6 +1,6 @@
 // validationUtils.js
 
-/**
+/*
  * Basic email format validation.
  * @param {string} email - The email string to validate.
  * @returns {boolean} True if the email format is considered valid, false otherwise.
