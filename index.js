@@ -1,10 +1,12 @@
 import sqlite3 from "sqlite3";
+import express from "express";
+import cors from "cors";
+
 import { createTables } from "./createTables.js";
 import { insertInv, insertOrder, insertUser } from "./insert.js";
 import { fetchAll, fetchFirst } from "./fetch.js";
 import { insertNewItem, updateInv } from "./updateTable.js";
-import express from "express";
-import cors from "cors";
+import { createAuthRoutes } from './auth.js'; //createuserpass functionality
 
 const db = new sqlite3.Database("ess-inv.db");
 
@@ -24,6 +26,14 @@ try {
 const app = express();
 app.use(cors()); // allows requests from frontend
 app.use(express.json()); // parses incoming json data
+
+// --- Routes ---
+
+// Authentication Routes (Mounted under /auth)
+console.log("Mounting authentication routes...");
+const authRoutes = createAuthRoutes(db); // Create router, passing the db connection
+app.use('/auth', authRoutes); // Mount under /auth prefix
+console.log("Authentication routes mounted under /auth");
 
 // retrieves all the inventory items from the inventory table and sends it to the front end
 app.get("/getInventory", async (req, res) => {
@@ -94,6 +104,17 @@ app.post('/finalizeOrder', async (req, res) => {
         res.status(500).json({message: 'Failed to update inventory after student\'s finalized order'});
     }
 
+});
+
+// --- Basic Root Route ---
+app.get('/', (req, res) => {
+    res.send('Backend Server is Running');
+});
+
+// --- Global Error Handler ---
+app.use((err, req, res, next) => {
+  console.error("Unhandled application error:", err.stack || err.message || err);
+  res.status(500).json({ success: false, message: 'An internal server error occurred!' });
 });
 
 // start server
