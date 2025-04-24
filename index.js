@@ -115,7 +115,7 @@ app.post('/updateCurrItem', async (req, res) => {
 });
 
 // allows admin to delete a product from the inventory based on the name of the product
-// requires frontend to send the request product's name
+// requires frontend to send the requested product's name
 app.post('/deleteItem', async (req, res) => {
     const {product_name} = req.body;
 
@@ -133,20 +133,6 @@ app.post('/deleteItem', async (req, res) => {
     }
 });
 
-// adds a visit to the visits table every time someone enters the home page
-// function app.post()
-
-
-// gets all of the items in the visits table
-app.get("/getVisits", async (req, res) => {
-    const sql = "SELECT * FROM Visits";
-    try {
-        const items = await fetchAll(db, sql);
-        res.json(items);
-    } catch (err) {
-        res.status(500).json({error: err.message});
-    }
-});
 
 // start server
 const PORT = 5000;

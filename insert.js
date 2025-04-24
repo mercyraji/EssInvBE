@@ -97,25 +97,3 @@ export const insertOrder = async (email, total_weight, total_quantity, product_n
         }
 
 };
-
-// remove parameters for visit date, it is done automatically
-export const addVisit = async (email, date) => {
-    const db = new sqlite3.Database("ess-inv.db");
-    const sql = 'INSERT INTO Visits(user_email, visit_time) VALUES(?, ?)';
-
-    var user_email;
-    if (!email){
-        user_email = ''; // if user not logged in, email is blank
-    } else {
-        user_email = email;
-    }
-
-    try {
-        await execute(db, sql, [user_email, date]);
-    } catch (err) {
-        console.log(err);
-        console.error("Error adding visit:", err);
-    } finally {
-        db.close();
-    }
-};
