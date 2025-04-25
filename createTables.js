@@ -43,7 +43,7 @@ export const createTables = async () => {
             product_name TEXT NOT NULL,
             total_price INTEGER NOT NULL,
             category TEXT NOT NULL,
-            order_date TEXT DEFAULT (datetime('now')),
+            order_date TEXT DEFAULT (datetime('now', 'localtime')),
             FOREIGN KEY (user_email) REFERENCES Users(email)
             )`
         );
@@ -57,7 +57,7 @@ export const createTables = async () => {
             `CREATE TABLE IF NOT EXISTS Visits (
             visit_id INTEGER PRIMARY KEY, 
             user_email TEXT,
-            visit_time TEXT DEFAULT (datetime('now')),
+            visit_time TEXT DEFAULT (datetime('now', 'localtime')),
             FOREIGN KEY (user_email) REFERENCES Users(email)
             )`
         );

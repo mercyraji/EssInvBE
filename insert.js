@@ -97,3 +97,26 @@ export const insertOrder = async (email, total_weight, total_quantity, product_n
         }
 
 };
+
+// adds visits to the home page into the visits table
+export const addVisit = async (email) => {
+    const db = new sqlite3.Database("ess-inv.db");
+    const sql = 'INSERT INTO Visits(user_email) VALUES(?)';
+
+    var user_email;
+    if (email == ''){ // frontend can send empty string to indicate not signed in user
+        user_email = 'Unknown'; // if user not logged in, email is unknown
+    } else {
+        user_email = email;
+    }
+
+    try {
+        await execute(db, sql, [user_email]);
+        console.log('Visit recorded!');
+    } catch (err) {
+        console.log(err);
+        console.error("Error adding visit:", err);
+    } finally {
+        db.close();
+    }
+};

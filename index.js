@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 import { createTables } from "./createTables.js";
-import { insertInv, insertOrder, insertUser } from "./insert.js";
+import { insertInv, insertUser } from "./insert.js";
 import { fetchAll, fetchFirst } from "./fetch.js";
 import { insertNewItem, updateInv, updateCurrItem, deleteItem } from "./updateTable.js";
 import express from "express";
@@ -13,7 +13,6 @@ try {
     await createTables();  // Ensure tables are created first
     await insertInv(); // product names are unique so if you restart program, shouldn't see any dupes
     await insertUser(); // email is unique so if you restart program, shouldn't see any dupes
-    //await insertOrder('student@umbc.edu', 10, 10, 'GITS Veg Biryani'); // example order
     console.log("Database initialized successfully!");
 } catch (error) {
     console.error("Error initializing database:", error);
@@ -133,6 +132,51 @@ app.post('/deleteItem', async (req, res) => {
     }
 });
 
+// adds a visit to the visits table every time someone enters the home page
+// front-end must give a proper email (logged in user) or empty string (signifies user not logged in)
+app.post('/addVisit', async (req, res) => {
+    const {email} = req.body; // empty string is '', no characters in the string at all
+
+    try {
+        await addVisit(email);
+        res.status(201).json({message: "Visit recorded"});
+    } catch(err) {
+        console.error("Error adding visit");
+        res.status(500).json({message: "Failed to add visit"});
+    }
+})
+
+
+// gets all of the entries in the visits table
+app.get("/getVisits", async (req, res) => {
+    const sql = "SELECT * FROM Visits";
+    try {
+        const items = await fetchAll(db, sql);
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({error: err.message});
+    }
+});
+
+// gets all the entries in the visits table and writes it to a csv file
+app.get('/exportVisits', async (req, res) => {
+    const sql = "SELECT * FROM Visits";
+
+    try {
+        const entries = await fetchAll(db, sql);
+
+        let visitsCSV = "Visit ID, User Email, Visit Time (Local Time)\n";
+        entries.forEach(row => {
+            visitsCSV += `${row.visit_id}, ${row.user_email}, ${row.visit_time}\n`;
+        });
+
+        res.setHeader('Content-disposition', 'attachment; filename=visits.csv');
+        res.setHeader('Content-Type', 'text/csv');
+        res.status(200).send(visitsCSV);
+    } catch (err) {
+        res.status(500).json({error: err.message});
+    }
+});
 
 // start server
 const PORT = 5000;
