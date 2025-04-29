@@ -178,6 +178,26 @@ app.get('/exportVisits', async (req, res) => {
     }
 });
 
+// exports all the order data in the db into a csv file
+app.get('/exportAllOrders', async (req, res) => {
+    const sql = "SELECT * FROM Orders";
+
+    try {
+        const orders = await fetchAll(db, sql);
+
+        let ordersCSV = "Order ID, User Email, Total Weight, Total Quantity, Product Name, Total Price, Category, Order Date\n";
+        orders.forEach(row => {
+            ordersCSV += `${row.order_id}, ${row.user_email}, ${row.total_weight}, ${row.total_quantity}, ${row.product_name}, ${row.total_price}, ${row.category}, ${row.order_date}\n`;
+        });
+
+        res.setHeader('Content-disposition', 'attachment; filename=allOrders.csv');
+        res.setHeader('Content-Type', 'text/csv');
+        res.status(200).send(ordersCSV);
+    } catch (err) {
+        res.status(500).json({error: err.message});
+    }
+});
+
 // start server
 const PORT = 5000;
 app.listen(PORT, () => {
