@@ -2,6 +2,7 @@ import sqlite3 from "sqlite3";
 import { createTables } from "./createTables.js";
 import { insertInv, insertUser } from "./insert.js";
 import { fetchAll, fetchFirst } from "./fetch.js";
+import { getPopularItems } from './popularityAnalyzer.js'; 
 import { insertNewItem, updateInv, updateCurrItem, deleteItem } from "./updateTable.js";
 import express from "express";
 import cors from "cors";
@@ -195,6 +196,38 @@ app.get('/exportAllOrders', async (req, res) => {
         res.status(200).send(ordersCSV);
     } catch (err) {
         res.status(500).json({error: err.message});
+    }
+});
+
+// --- Route for Popular Items ---
+app.get("/getPopularItems", async (req, res) => {
+    // Default to top 5, or allow client to specify via query parameter
+    const topN = req.query.topN ? parseInt(req.query.topN, 10) : 5;
+
+    if (isNaN(topN) || topN <= 0) {
+        return res.status(400).json({ error: "Invalid topN parameter. Must be a positive number." });
+    }
+
+    // This SQL assumes your 'Orders' table structure where each row
+    // effectively represents an item sold, with 'product_names' being the item name
+    // and 'total_quantity' being the quantity for that specific item in that order transaction.
+    const sql = "SELECT product_names, total_quantity FROM Orders";
+
+    try {
+        // Fetch all order line items from the database
+        const allOrderItems = await fetchAll(db, sql); // Needs the 'db' object
+
+        if (!allOrderItems || allOrderItems.length === 0) {
+            return res.json([]); // No orders, so no popular items
+        }
+
+        // Get the most popular items using the analyzer
+        const popularItems = getPopularItems(allOrderItems, topN);
+        res.json(popularItems);
+
+    } catch (err) {
+        console.error("Error fetching or analyzing popular items:", err);
+        res.status(500).json({ error: "Failed to retrieve popular items" });
     }
 });
 
